@@ -1,0 +1,28 @@
+{
+  "name": "@honeyjs/router",
+  "version": "1.0.0",
+  "description": "The official router for honeyjs",
+  "author": "Codefoxdev",
+  "license": "MIT",
+  "keywords": [
+    "router",
+    "honeyjs",
+    "jsx"
+  ],
+  "type": "module",
+  "dependencies": {
+    "@honeyjs/core": "^0.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codefoxdev/honeyjs-router.git"
+  },
+  "bugs": {
+    "url": "https://github.com/codefoxdev/honeyjs-router/issues"
+  },
+  "homepage": "https://github.com/codefoxdev/honeyjs-router#readme",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  }
+}

@@ -1,0 +1,16 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+dependencies:
+  '@honeyjs/core':
+    specifier: ^0.2.0
+    version: 0.2.0
+
+packages:
+
+  /@honeyjs/core@0.2.0:
+    resolution: {integrity: sha512-ijLmJZm0OPX/aApYEeXu2Wy56/EMItzjPf6iSDxvWzSHlTvbsPyrfzRqZZRuZXQ95sYi6ra5SQyyOQ/HKn13wQ==}
+    dev: false
