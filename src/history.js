@@ -1,9 +1,16 @@
 import { createNamespace } from "@honeyjs/core/internal";
-import { createSignal } from "@honeyjs/core";
+import { createEffect, createSignal } from "@honeyjs/core";
 
 const events = createNamespace("router");
 
+// TODO: Add more properties to location
 const [location, setLocation] = createSignal(window.location.pathname);
+
+createEffect(() => {
+  const loc = location();
+  if (loc == window.location.pathname) return;
+  history.pushState({}, "", loc);
+});
 
 // HISTORY
 
@@ -15,13 +22,7 @@ let historyIndex = 0;
  * @returns {string} The location in pathname format `/path/to/page`
  */
 export const getLocation = () => historyList[historyIndex];
-
-/**
- * Gets the current location (non reactive)
- */
-export function useLocation() {
-  return createSignal(getLocation());
-}
+export const useLocation = location;
 
 /**
  * Navigates back one page into history

@@ -1,14 +1,18 @@
-import { useLocation } from "./history";
+import { useLocation, navigate } from "./history";
 
 /**
  * @param {object} props
  * @param {"horizontal" | "vertical" | null} props.swipe Specifies the swipe direction when used on mobile, leave empty or null when swiping isn't used/allowed
  */
 export function Router(props) {
+  console.log(props.children)
   return (
-    <>
+    <div className="__honey_router" style={{
+      display: "flex",
+      flexDirection: props.swipe == "vertical" ? "column" : "row",
+    }}>
       {props.children}
-    </>
+    </div>
   )
 }
 
@@ -18,12 +22,17 @@ export function Router(props) {
  * @param {Function | HTMLElement | Array} props.component The component to render at the `path`
  */
 export function Route(props) {
-  const [location] = useLocation();
+  // check if item has children, than register its subpaths
+
   return (
-    <>
-      {() => location() ?? <props.component />}
-    </>
+    <div path={props.path} className="__honey_router_page" style={props.style ?? ""}>
+      {props.component}
+    </div>
   )
+}
+
+export function AppBar(props) {
+
 }
 
 /**
@@ -33,7 +42,7 @@ export function Route(props) {
 export function A({ href, children }) {
   const onclick = (e) => {
     e.preventDefault();
-    //navigate(href);
+    navigate(href);
   }
   return (
     <a href={href} onClick={onclick}>{children}</a>
