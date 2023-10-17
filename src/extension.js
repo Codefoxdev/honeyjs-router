@@ -17,4 +17,8 @@ extension.injectCSS(/*css*/`
 [filler=""] {
   display: block;
 }
+div.__honey_router_page {
+  min-width: 100vw;
+  position: relative;
+}
 `)

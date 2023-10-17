@@ -1,5 +1,7 @@
 import { useLocation, navigate } from "./history";
 
+// TODO: Add preserve similar back with appbar and navbar etc.
+
 /**
  * @param {object} props
  * @param {"horizontal" | "vertical" | null} props.swipe Specifies the swipe direction when used on mobile, leave empty or null when swiping isn't used/allowed
@@ -31,7 +33,33 @@ export function Route(props) {
   )
 }
 
-export function AppBar(props) {
+/**
+ * @typedef {object} ViewOptions
+ * @property {boolean} showAppBar Show the appbar if it is used defaults to false
+ * 
+ * @param {object} props
+ * @param {ViewOptions} props.options
+ * @param {React.CSSProperties} props.style
+ * @returns 
+ */
+export function View(props) {
+  return (
+    <div className="__honey_router_view" style={props.style ?? ""}>
+      {props.children}
+    </div>
+  )
+}
+
+/**
+ * @typedef {{
+ *  Navigator: string,
+ *  Route: (props: { path: string, component: Function | HTMLElement | Array }) => void
+ * }} AppBar
+ * 
+ * @param {Function} component 
+ * @returns {AppBar}
+ */
+export function createTabbar(component) {
 
 }
 
