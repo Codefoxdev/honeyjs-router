@@ -21,8 +21,12 @@
     "url": "https://github.com/codefoxdev/honeyjs-router/issues"
   },
   "homepage": "https://github.com/codefoxdev/honeyjs-router#readme",
+  "types": "./src/types/index.d.ts",
   "main": "./src/index.js",
   "exports": {
-    ".": "./src/index.js"
+    ".": {
+      "default": "./src/index.js",
+      "types": "./src/types/index.d.ts"
+    }
   }
 }

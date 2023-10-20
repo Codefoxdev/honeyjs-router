@@ -6,18 +6,13 @@ export const extension = new Extension({
 });
 
 extension.injectCSS(/*css*/`
-[wrapper=transition] {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
+div.Navigator {
+  --offset: 0px;
+  display: flex;
+  overflow-x: hidden;
+  margin-left: var(--offset);
 }
-[filler=""] {
-  display: block;
-}
-div.__honey_router_page {
+[data-type="honey-screen"] {
   min-width: 100vw;
   position: relative;
 }

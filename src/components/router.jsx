@@ -1,4 +1,4 @@
-import { useLocation, navigate } from "./history";
+import { useLocation, navigate } from "../history/history";
 
 // TODO: Add preserve similar back with appbar and navbar etc.
 
@@ -7,15 +7,7 @@ import { useLocation, navigate } from "./history";
  * @param {"horizontal" | "vertical" | null} props.swipe Specifies the swipe direction when used on mobile, leave empty or null when swiping isn't used/allowed
  */
 export function Router(props) {
-  console.log(props.children)
-  return (
-    <div className="__honey_router" style={{
-      display: "flex",
-      flexDirection: props.swipe == "vertical" ? "column" : "row",
-    }}>
-      {props.children}
-    </div>
-  )
+  return props.children;
 }
 
 /**
@@ -48,19 +40,6 @@ export function View(props) {
       {props.children}
     </div>
   )
-}
-
-/**
- * @typedef {{
- *  Navigator: string,
- *  Route: (props: { path: string, component: Function | HTMLElement | Array }) => void
- * }} AppBar
- * 
- * @param {Function} component 
- * @returns {AppBar}
- */
-export function createTabbar(component) {
-
 }
 
 /**
