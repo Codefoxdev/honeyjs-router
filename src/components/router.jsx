@@ -1,4 +1,4 @@
-import { useLocation, navigate } from "../history/history";
+import { useLocation, navigate } from "../navigation/history";
 
 // TODO: Add preserve similar back with appbar and navbar etc.
 

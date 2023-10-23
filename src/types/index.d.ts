@@ -18,9 +18,10 @@ declare interface ScreenOptions {
 
 declare interface TabsNavigator {
   setStyle(fn: (screen: ScreenOptions) => NavigatorStyle): TabsNavigator;
-  Navigator(props: { swipe: "horizontal" | null });
-  Screen(props: ScreenOptions);
-  page(index?: number);
+  Navigator(props: { swipe: "horizontal" | null }): Honey.Component;
+  Screen(props: ScreenOptions): Honey.Component;
+  page(index?: number): void;
+  setupGestures(): void;
 }
 
 declare interface NavigatorStyle {
@@ -30,3 +31,5 @@ declare interface NavigatorStyle {
 }
 
 export function createTabsNavigator(): TabsNavigator;
+
+export function useLocation(): Location;

@@ -1,4 +1,6 @@
 import { createSignal, createRef, onMount, createGesture, createEffect } from "@honeyjs/core";
+import { registerPath } from "../navigation/navigation.js";
+import { navigate } from "../index.js";
 
 const width = window.innerWidth;
 
@@ -8,6 +10,8 @@ const width = window.innerWidth;
 export function createTabsNavigator() {
   const [active, setActive] = createSignal("");
   let screens = [];
+  let buttons = [];
+
   let styleFn;
   let swipe = false;
 
@@ -15,7 +19,7 @@ export function createTabsNavigator() {
   const [offset, setOffset] = createSignal(0);
   const [page, setPage] = createSignal(0);
 
-  return {
+  const res = {
     setStyle(fn) {
       styleFn = fn;
       return this;
@@ -26,28 +30,78 @@ export function createTabsNavigator() {
      */
     Navigator(props) {
       swipe = props.swipe;
+
+      res.setupButtons(props.children);
+      res.setupGestures();
+
+      return (
+        <>
+          <div className="Navigator" data-swipe={swipe} ref={navigatorRef}>
+            {props.children}
+          </div>
+          <nav
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              width: "100vw",
+            }}>
+            <div
+              style={{
+                display: "grid",
+                gap: "1rem",
+                alignItems: "center",
+                gridTemplateColumns: `repeat(${buttons.length}, 1fr)`,
+                justifyContent: "center",
+                width: "calc(100vw - 2rem)",
+              }}>
+              {buttons}
+            </div>
+          </nav>
+        </>
+      );
+    },
+    // TODO: Correct screen should show on load
+    Screen(props) {
+      screens.push(props);
+      const index = screens.indexOf(props);
+
+      registerPath(props.path, () => res.page(index));
+
+      return (
+        <div data-type="honey-screen" data-path={props.path} data-name={props.name} data-index={screens.length - 1}>
+          {props.component}
+        </div>
+      )
+    },
+    page(index) {
+      if (index == undefined || index == null) return page();
+      setPage(index);
+    },
+
+    setupButtons(children) {
       let first = true;
-      let buttons = [];
-      for (const child of props.children) {
+      for (const child of children) {
         const index = child.getAttribute("data-index");
         if (child.getAttribute("data-type") == "honey-screen" && index) {
           const screen = screens[index];
           const { activeColor, inactiveColor, icon: Icon } = styleFn(screen);
 
           if (first) {
-            setActive(screen.name);
+            setPage(index);
             first = false;
           }
           const currentActive = () => page() == index;
 
           buttons.push((
-            <span className="link" active={() => currentActive()} onClick={() => setPage(index)}>
+            <span className="link" active={() => currentActive()} onClick={() => navigate(screen.path)}>
               <Icon color={() => currentActive() ? activeColor : inactiveColor} />
             </span>
           ))
         }
       }
-
+    },
+    setupGestures() {
       const bounds = { min: 0, max: width * (buttons.length - 1) }
       let transitioning = false;
 
@@ -62,7 +116,7 @@ export function createTabsNavigator() {
           onMove(e) {
             if (e.direction == "vertical") return;
             const lastPos = page() * width;
-            if (Math.abs(e.velocity.x) > 25) {
+            if (Math.abs(e.velocity.x) > 20) {
               if (e.delta.x < 0) setPage(Math.min(page() + 1, buttons.length - 1));
               else setPage(Math.max(page() - 1, 0));
               return e.end();
@@ -94,45 +148,8 @@ export function createTabsNavigator() {
           transitioning = false;
         });
       });
-
-      return (
-        <>
-          <div className="Navigator" data-swipe={swipe} ref={navigatorRef}>
-            {props.children}
-          </div>
-          <nav
-            style={{
-              position: "fixed",
-              bottom: 0,
-              left: 0,
-              width: "100vw",
-            }}>
-            <div
-              style={{
-                display: "grid",
-                gap: "1rem",
-                alignItems: "center",
-                gridTemplateColumns: `repeat(${buttons.length}, 1fr)`,
-                justifyContent: "center",
-                width: "calc(100vw - 2rem)",
-              }}>
-              {buttons}
-            </div>
-          </nav>
-        </>
-      );
-    },
-    Screen(props) {
-      screens.push(props);
-      return (
-        <div data-type="honey-screen" data-path={props.path} data-name={props.name} data-index={screens.length - 1}>
-          {props.component}
-        </div>
-      )
-    },
-    page(index) {
-      if (!index) return page();
-      setPage(index);
     }
   }
+
+  return res;
 }

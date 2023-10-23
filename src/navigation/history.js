@@ -4,12 +4,14 @@ import { createEffect, createSignal } from "@honeyjs/core";
 const events = createNamespace("router");
 
 // TODO: Add more properties to location
-const [location, setLocation] = createSignal(window.location.pathname);
+const [location, setLocation] = createSignal(window.location);
+const [path, setPath] = createSignal(location().pathname);
 
 createEffect(() => {
-  const loc = location();
-  if (loc == window.location.pathname) return;
-  history.pushState({}, "", loc);
+  const _path = path();
+  if (_path == window.location.pathname) return;
+  history.pushState({}, "", _path);
+  setLocation(window.location);
 });
 
 // HISTORY
@@ -22,6 +24,9 @@ let historyIndex = 0;
  * @returns {string} The location in pathname format `/path/to/page`
  */
 export const getLocation = () => historyList[historyIndex];
+/**
+ * @type {import("../types/index.d.ts").useLocation}
+ */
 export const useLocation = location;
 
 /**
@@ -35,7 +40,7 @@ export function back() {
     target: historyList[historyIndex],
     history: historyList
   }, true);
-  if (res != false) setLocation(historyList[historyIndex]);
+  if (res != false) setPath(historyList[historyIndex]);
 }
 
 /**
@@ -48,7 +53,7 @@ export function forward() {
     target: historyList[historyIndex],
     history: historyList
   }, true);
-  if (res != false) setLocation(historyList[historyIndex]);
+  if (res != false) setPath(historyList[historyIndex]);
 }
 
 /**
@@ -69,6 +74,6 @@ export function navigate(targetPath) {
   if (res != false) {
     historyList.push(targetPath);
     historyIndex = historyList.length - 1;
-    setLocation(historyList[historyIndex]);
+    setPath(historyList[historyIndex]);
   };
 }
