@@ -1,5 +1,7 @@
 import { createSignal, createRef, onMount, createGesture, createEffect } from "@honeyjs/core";
 
+const width = window.innerWidth;
+
 /**
  * @type {import("../types/index").createTabsNavigator}
  */
@@ -10,6 +12,8 @@ export function createTabsNavigator() {
   let swipe = false;
 
   const [navigator, navigatorRef] = createRef();
+  const [offset, setOffset] = createSignal(0);
+  const [page, setPage] = createSignal(0);
 
   return {
     setStyle(fn) {
@@ -34,57 +38,60 @@ export function createTabsNavigator() {
             setActive(screen.name);
             first = false;
           }
-          const currentActive = () => active() == screen.name;
+          const currentActive = () => page() == index;
 
           buttons.push((
-            <span className="link" active={() => currentActive()} onClick={() => console.log(screen.path)}>
+            <span className="link" active={() => currentActive()} onClick={() => setPage(index)}>
               <Icon color={() => currentActive() ? activeColor : inactiveColor} />
             </span>
           ))
         }
       }
 
-      const [offset, setOffset] = createSignal(0);
-      const width = window.innerWidth;
       const bounds = { min: 0, max: width * (buttons.length - 1) }
-      let page = 0;
+      let transitioning = false;
 
       onMount(() => {
         if (navigator().getAttribute("data-swipe") != "horizontal") return;
+
         createGesture({
           target: navigator(),
           alias: "router-swipe",
           direction: "horizontal",
           autoStart: true,
           onMove(e) {
-            const lastPos = page * width;
-            console.log(e.velocity.x);
-            /* if (e.delta.x > width / 10 && e.velocity.x <= 60) {
-              page = Math.max(page - 1, 0);
+            if (e.direction == "vertical") return;
+            const lastPos = page() * width;
+            if (Math.abs(e.velocity.x) > 25) {
+              if (e.delta.x < 0) setPage(Math.min(page() + 1, buttons.length - 1));
+              else setPage(Math.max(page() - 1, 0));
               return e.end();
-            } else if (e.delta.x < width / 10 && e.velocity.x >= 60) {
-              page = Math.max(page + 1, buttons.length);
-              return e.end();
-            } */
+            }
 
             if (bounds.min < lastPos - e.delta.x && bounds.max > lastPos - e.delta.x) setOffset(lastPos - e.delta.x);
             else setOffset(lastPos - (e.delta.x * 0.2))
             navigator().style.setProperty("margin-left", `${-offset()}px`);
           },
           onEnd(e) {
-            const old = offset();
-            if (!e.manuallyEnded) page = Math.round(old / width);
-            setOffset(width * page);
-
-            navigator().animate([
-              { marginLeft: `${-old}px` },
-              { marginLeft: `${-offset()}px` }
-            ], {
-              duration: 300,
-              easing: "ease",
-            });
-            navigator().style.setProperty("margin-left", `${-offset()}px`);
+            if (e.manuallyEnded == false) setPage(Math.round(offset() / width));
           }
+        });
+
+        createEffect(() => {
+          if (transitioning) return;
+          const old = navigator().style.marginLeft;
+          transitioning = true;
+          setOffset(page() * width);
+
+          navigator().animate([
+            { marginLeft: `${old}` },
+            { marginLeft: `${-page() * width}px` }
+          ], {
+            duration: 300,
+            easing: "ease",
+          });
+          navigator().style.setProperty("margin-left", `${-page() * width}px`);
+          transitioning = false;
         });
       });
 
@@ -122,6 +129,10 @@ export function createTabsNavigator() {
           {props.component}
         </div>
       )
+    },
+    page(index) {
+      if (!index) return page();
+      setPage(index);
     }
   }
 }

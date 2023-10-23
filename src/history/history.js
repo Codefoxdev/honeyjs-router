@@ -25,7 +25,7 @@ export const getLocation = () => historyList[historyIndex];
 export const useLocation = location;
 
 /**
- * Navigates back one page into history
+ * Navigates back one page (if possible) into history 
  */
 export function back() {
   if (historyList.length == 1) return;

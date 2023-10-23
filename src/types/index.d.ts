@@ -20,6 +20,7 @@ declare interface TabsNavigator {
   setStyle(fn: (screen: ScreenOptions) => NavigatorStyle): TabsNavigator;
   Navigator(props: { swipe: "horizontal" | null });
   Screen(props: ScreenOptions);
+  page(index?: number);
 }
 
 declare interface NavigatorStyle {
