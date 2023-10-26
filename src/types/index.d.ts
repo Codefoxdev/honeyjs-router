@@ -18,8 +18,16 @@ declare interface ScreenOptions {
 
 declare interface TabsNavigator {
   setStyle(fn: (screen: ScreenOptions) => NavigatorStyle): TabsNavigator;
+
+  /**
+   * The Navigator component is responsible for showing the right screen, add screens by using the `TabsNavigator.Screen` component
+   */
   Navigator(props: { swipe: "horizontal" | null }): Honey.Component;
+  /**
+   * Creates a screen when inside of the `TabsNavigator.Navigator` component
+   */
   Screen(props: ScreenOptions): Honey.Component;
+
   page(index?: number): void;
   setupGestures(): void;
 }

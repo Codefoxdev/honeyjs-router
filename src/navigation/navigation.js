@@ -9,6 +9,11 @@ export function registerPath(path, callback) {
   });
 }
 
+export function getPath(path) {
+  if (path == null || path == undefined) path = useLocation().pathname;
+  return paths.find(e => e.path == path);
+}
+
 // TODO: maybe add event for this?
 createEffect(() => {
   const path = useLocation().pathname;

@@ -43,6 +43,13 @@ export function View(props) {
 }
 
 /**
+ * @param {import("@honeyjs/core").ComponentProps} props
+ */
+export function Screen(props) {
+
+}
+
+/**
  * @param {object} param0 
  * @param {string} param0.href The location in pathname format `/path/to/page`
  */

@@ -1,14 +1,11 @@
 import { createSignal, createRef, onMount, createGesture, createEffect } from "@honeyjs/core";
-import { registerPath } from "../navigation/navigation.js";
+import { registerPath, getPath } from "../navigation/navigation.js";
 import { navigate } from "../index.js";
-
-const width = window.innerWidth;
 
 /**
  * @type {import("../types/index").createTabsNavigator}
  */
 export function createTabsNavigator() {
-  const [active, setActive] = createSignal("");
   let screens = [];
   let buttons = [];
 
@@ -16,6 +13,8 @@ export function createTabsNavigator() {
   let swipe = false;
 
   const [navigator, navigatorRef] = createRef();
+  const [tabbar, tabbarRef] = createRef();
+
   const [offset, setOffset] = createSignal(0);
   const [page, setPage] = createSignal(0);
 
@@ -31,8 +30,12 @@ export function createTabsNavigator() {
     Navigator(props) {
       swipe = props.swipe;
 
+      // Setup buttons and gesture controls
       res.setupButtons(props.children);
       res.setupGestures();
+
+      // Show correct screen on load
+      getPath()?.callback();
 
       return (
         <>
@@ -45,7 +48,7 @@ export function createTabsNavigator() {
               bottom: 0,
               left: 0,
               width: "100vw",
-            }}>
+            }} ref={tabbarRef}>
             <div
               style={{
                 display: "grid",
@@ -74,6 +77,7 @@ export function createTabsNavigator() {
         </div>
       )
     },
+
     page(index) {
       if (index == undefined || index == null) return page();
       setPage(index);
@@ -81,6 +85,8 @@ export function createTabsNavigator() {
 
     setupButtons(children) {
       let first = true;
+      buttons = [];
+
       for (const child of children) {
         const index = child.getAttribute("data-index");
         if (child.getAttribute("data-type") == "honey-screen" && index) {
@@ -102,6 +108,7 @@ export function createTabsNavigator() {
       }
     },
     setupGestures() {
+      let width = window.innerWidth;
       const bounds = { min: 0, max: width * (buttons.length - 1) }
       let transitioning = false;
 
@@ -115,6 +122,7 @@ export function createTabsNavigator() {
           autoStart: true,
           onMove(e) {
             if (e.direction == "vertical") return;
+            width = window.innerWidth;
             const lastPos = page() * width;
             if (Math.abs(e.velocity.x) > 20) {
               if (e.delta.x < 0) setPage(Math.min(page() + 1, buttons.length - 1));
@@ -133,8 +141,9 @@ export function createTabsNavigator() {
 
         createEffect(() => {
           if (transitioning) return;
-          const old = navigator().style.marginLeft;
+          const old = navigator().style.marginLeft ?? "0px";
           transitioning = true;
+          width = window.innerWidth;
           setOffset(page() * width);
 
           navigator().animate([
